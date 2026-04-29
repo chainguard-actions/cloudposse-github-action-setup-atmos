@@ -1,6 +1,12 @@
 # cloudposse/github-action-setup-atmos
 
-Hardened GitHub Action by [Chainguard](https://www.chainguard.dev).
+Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/cloudposse/github-action-setup-atmos](https://github.com/cloudposse/github-action-setup-atmos).
+
+## Versions
+
+| Version | Tag | Upstream commit |
+|---------|-----|-----------------|
+| v2 | [`v2`](https://github.com/chainguard-actions/github-action-setup-atmos/tree/v2) | — |
 
 ## Privacy
 
