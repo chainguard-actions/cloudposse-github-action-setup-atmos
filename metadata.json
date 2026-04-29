@@ -1,5 +1,6 @@
 {
   "owner": "cloudposse",
   "name": "github-action-setup-atmos",
-  "visibility": ""
+  "visibility": "internal",
+  "description": "A GitHub Actions that installs the Atmos CLI"
 }
