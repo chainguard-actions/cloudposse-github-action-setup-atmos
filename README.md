@@ -1,6 +1,6 @@
 # cloudposse/github-action-setup-atmos
 
-A GitHub Actions that installs the Atmos CLI
+A GitHub Action to setup the Atmos CLI
 
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/cloudposse/github-action-setup-atmos](https://github.com/cloudposse/github-action-setup-atmos).
 
@@ -9,6 +9,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
 | v2 | [`v2`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v2) | — |
+| v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.0.0) | [`49625d9`](https://github.com/cloudposse/github-action-setup-atmos/commit/49625d9fcea135fe450ff3baa36283ac67b21cb8) |
 
 ## Privacy
 
