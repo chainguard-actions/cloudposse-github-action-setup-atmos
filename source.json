@@ -1,6 +1,11 @@
 {
   "owner": "cloudposse",
   "repo": "github-action-setup-atmos",
-  "version": "",
-  "url": "https://github.com/cloudposse/github-action-setup-atmos"
+  "version": "v3.0.0",
+  "commit_sha": "49625d9fcea135fe450ff3baa36283ac67b21cb8",
+  "url": "https://github.com/cloudposse/github-action-setup-atmos",
+  "policy_sha": "ff50f15e4b79bfbf764dafdfd2579175a6ea9771",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "1",
+  "harden_agent_version": "1"
 }
