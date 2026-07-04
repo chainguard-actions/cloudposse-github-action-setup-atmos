@@ -1,0 +1,44 @@
+name: Test atmos setup without wrapper
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          atmos-version: latest
+          install-wrapper: "false"
+          checksum-validation: skip
+      - name: Assert atmos-version output is set
+        env:
+          ACTUAL: ${{ steps.setup.outputs.atmos-version }}
+        run: |
+          echo "actual: $ACTUAL"
+          if [ -z "$ACTUAL" ]; then
+            echo "FAIL: atmos-version output is empty"
+            exit 1
+          fi
+          echo "PASS: atmos-version=$ACTUAL"
+      - name: Assert atmos binary is available and is not a wrapper script
+        run: |
+          ATMOS_PATH=$(which atmos)
+          if [ -z "$ATMOS_PATH" ]; then
+            echo "FAIL: atmos binary not found in PATH"
+            exit 1
+          fi
+          echo "atmos path: $ATMOS_PATH"
+          # When install-wrapper is false, the binary should be a real executable (not a shell script wrapper)
+          FILE_TYPE=$(file "$ATMOS_PATH")
+          echo "file type: $FILE_TYPE"
+          if echo "$FILE_TYPE" | grep -qi "shell script"; then
+            echo "FAIL: expected real binary but got a shell script (wrapper was installed)"
+            exit 1
+          fi
+          echo "PASS: atmos is a real binary (no wrapper)"
+      - name: Assert atmos runs successfully
+        run: |
+          atmos version || { echo "FAIL: atmos version command failed"; exit 1; }
+          echo "PASS"
