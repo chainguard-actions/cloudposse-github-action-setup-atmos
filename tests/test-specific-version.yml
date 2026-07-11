@@ -1,0 +1,44 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          atmos-version: "1.63.0"
+          install-wrapper: "true"
+          checksum-validation: "warn"
+      - name: Assert atmos-version output matches requested version
+        env:
+          ACTUAL: ${{ steps.action.outputs.atmos-version }}
+        run: |
+          echo "actual: $ACTUAL"
+          if [ -z "$ACTUAL" ]; then
+            echo "FAIL: atmos-version output is empty"
+            exit 1
+          fi
+          # The output should contain the version number we requested
+          if echo "$ACTUAL" | grep -qF "1.63.0"; then
+            echo "PASS: atmos-version output contains 1.63.0"
+          else
+            echo "FAIL: expected version 1.63.0 but got: $ACTUAL"
+            exit 1
+          fi
+      - name: Assert atmos binary is available
+        run: |
+          which atmos || { echo "FAIL: atmos binary not found in PATH"; exit 1; }
+          echo "PASS: atmos found at $(which atmos)"
+      - name: Assert atmos reports correct version
+        run: |
+          VERSION_OUTPUT=$(atmos version 2>&1 || true)
+          echo "version output: $VERSION_OUTPUT"
+          if echo "$VERSION_OUTPUT" | grep -qF "1.63.0"; then
+            echo "PASS: atmos reports version 1.63.0"
+          else
+            echo "FAIL: atmos did not report version 1.63.0, got: $VERSION_OUTPUT"
+            exit 1
+          fi
