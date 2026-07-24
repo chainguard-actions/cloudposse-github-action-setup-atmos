@@ -1,0 +1,52 @@
+name: Test wrapper script captures outputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          atmos-version: "latest"
+          install-wrapper: "true"
+          token: ${{ github.token }}
+      - name: Assert atmos-version output is set
+        env:
+          ACTUAL: ${{ steps.setup.outputs.atmos-version }}
+        run: |
+          echo "actual: $ACTUAL"
+          if [ -z "$ACTUAL" ]; then
+            echo "FAIL: atmos-version output is empty"
+            exit 1
+          fi
+          echo "PASS: atmos-version=$ACTUAL"
+      - name: Assert atmos binary is on PATH
+        run: |
+          if ! command -v atmos >/dev/null 2>&1; then
+            echo "FAIL: atmos binary not found on PATH"
+            exit 1
+          fi
+          echo "PASS: atmos found at $(command -v atmos)"
+      - id: run-atmos
+        name: Run atmos version via wrapper
+        run: atmos version
+      - name: Assert wrapper captured stdout output
+        env:
+          ATMOS_STDOUT: ${{ steps.run-atmos.outputs.stdout }}
+          ATMOS_STDERR: ${{ steps.run-atmos.outputs.stderr }}
+          ATMOS_EXITCODE: ${{ steps.run-atmos.outputs.exitcode }}
+        run: |
+          printf 'stdout: %s\n' "$ATMOS_STDOUT"
+          printf 'stderr: %s\n' "$ATMOS_STDERR"
+          printf 'exitcode: %s\n' "$ATMOS_EXITCODE"
+          if [ -z "$ATMOS_STDOUT" ]; then
+            echo "FAIL: wrapper produced no stdout output for 'atmos version'"
+            exit 1
+          fi
+          if [ "$ATMOS_EXITCODE" != "0" ]; then
+            echo "FAIL: expected exitcode 0, got '$ATMOS_EXITCODE'"
+            exit 1
+          fi
+          echo "PASS: wrapper captured stdout and exitcode correctly"

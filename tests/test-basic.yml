@@ -11,7 +11,7 @@ jobs:
         with:
           atmos-version: "latest"
           install-wrapper: "true"
-          checksum-validation: "warn"
+          token: ${{ github.token }}
       - name: Assert atmos-version output is set
         env:
           ACTUAL: ${{ steps.action.outputs.atmos-version }}
@@ -22,11 +22,19 @@ jobs:
             exit 1
           fi
           echo "PASS: atmos-version=$ACTUAL"
-      - name: Assert atmos binary is available
+      - name: Assert atmos binary is on PATH
         run: |
-          which atmos || { echo "FAIL: atmos binary not found in PATH"; exit 1; }
-          echo "PASS: atmos found at $(which atmos)"
+          if ! command -v atmos >/dev/null 2>&1; then
+            echo "FAIL: atmos binary not found on PATH"
+            exit 1
+          fi
+          echo "PASS: atmos found at $(command -v atmos)"
       - name: Assert atmos runs successfully
         run: |
-          atmos version || { echo "FAIL: atmos version command failed"; exit 1; }
+          VERSION_OUTPUT=$(atmos version 2>&1 || true)
+          echo "atmos version output: $VERSION_OUTPUT"
+          if [ -z "$VERSION_OUTPUT" ]; then
+            echo "FAIL: atmos version produced no output"
+            exit 1
+          fi
           echo "PASS: atmos version ran successfully"

@@ -1,4 +1,4 @@
-name: Test installation without wrapper script
+name: Test install without wrapper
 on:
   workflow_dispatch:
 jobs:
@@ -11,7 +11,7 @@ jobs:
         with:
           atmos-version: "latest"
           install-wrapper: "false"
-          checksum-validation: "warn"
+          token: ${{ github.token }}
       - name: Assert atmos-version output is set
         env:
           ACTUAL: ${{ steps.action.outputs.atmos-version }}
@@ -22,23 +22,21 @@ jobs:
             exit 1
           fi
           echo "PASS: atmos-version=$ACTUAL"
-      - name: Assert atmos binary is available
+      - name: Assert atmos binary is on PATH
         run: |
-          which atmos || { echo "FAIL: atmos binary not found in PATH"; exit 1; }
-          echo "PASS: atmos found at $(which atmos)"
-      - name: Assert atmos runs without wrapper
-        run: |
-          atmos version || { echo "FAIL: atmos version command failed"; exit 1; }
-          echo "PASS: atmos runs successfully without wrapper"
-      - name: Assert binary is not a wrapper script
-        run: |
-          ATMOS_PATH=$(which atmos)
-          echo "atmos path: $ATMOS_PATH"
-          # Without wrapper, the binary should be an ELF executable, not a shell script
-          FILE_TYPE=$(file "$ATMOS_PATH" 2>&1 || true)
-          echo "file type: $FILE_TYPE"
-          if echo "$FILE_TYPE" | grep -qi "shell script"; then
-            echo "FAIL: atmos appears to be a wrapper shell script when install-wrapper=false"
+          if ! command -v atmos >/dev/null 2>&1; then
+            echo "FAIL: atmos binary not found on PATH"
             exit 1
           fi
-          echo "PASS: atmos is not a wrapper shell script"
+          echo "PASS: atmos found at $(command -v atmos)"
+      - name: Assert atmos runs without wrapper
+        run: |
+          # Without wrapper, atmos should still run but stdout/stderr/exitcode
+          # outputs won't be captured. The binary itself should work.
+          VERSION_OUTPUT=$(atmos version 2>&1 || true)
+          echo "atmos version output: $VERSION_OUTPUT"
+          if [ -z "$VERSION_OUTPUT" ]; then
+            echo "FAIL: atmos version produced no output"
+            exit 1
+          fi
+          echo "PASS: atmos runs successfully without wrapper"

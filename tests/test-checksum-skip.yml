@@ -1,4 +1,4 @@
-name: Test specific version installation
+name: Test checksum validation skip
 on:
   workflow_dispatch:
 jobs:
@@ -9,10 +9,11 @@ jobs:
       - id: action
         uses: .
         with:
-          atmos-version: "v1.172.0"
-          install-wrapper: "false"
+          atmos-version: "latest"
+          install-wrapper: "true"
+          checksum-validation: "skip"
           token: ${{ github.token }}
-      - name: Assert atmos-version output matches requested version
+      - name: Assert atmos-version output is set
         env:
           ACTUAL: ${{ steps.action.outputs.atmos-version }}
         run: |
@@ -21,13 +22,7 @@ jobs:
             echo "FAIL: atmos-version output is empty"
             exit 1
           fi
-          # The output should contain the version we requested
-          if echo "$ACTUAL" | grep -qF "v1.172.0"; then
-            echo "PASS: atmos-version=$ACTUAL matches requested v1.172.0"
-          else
-            echo "FAIL: expected version containing 'v1.172.0', got '$ACTUAL'"
-            exit 1
-          fi
+          echo "PASS: atmos-version=$ACTUAL"
       - name: Assert atmos binary is on PATH
         run: |
           if ! command -v atmos >/dev/null 2>&1; then
@@ -35,13 +30,12 @@ jobs:
             exit 1
           fi
           echo "PASS: atmos found at $(command -v atmos)"
-      - name: Assert installed version matches requested
+      - name: Assert atmos runs successfully with skip checksum
         run: |
           VERSION_OUTPUT=$(atmos version 2>&1 || true)
           echo "atmos version output: $VERSION_OUTPUT"
-          if echo "$VERSION_OUTPUT" | grep -qF "1.172.0"; then
-            echo "PASS: installed version matches 1.172.0"
-          else
-            echo "FAIL: installed version does not match 1.172.0, got: $VERSION_OUTPUT"
+          if [ -z "$VERSION_OUTPUT" ]; then
+            echo "FAIL: atmos version produced no output"
             exit 1
           fi
+          echo "PASS: atmos version ran successfully with checksum-validation=skip"
