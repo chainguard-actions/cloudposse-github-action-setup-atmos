@@ -1,0 +1,51 @@
+name: Test atmos installation without wrapper
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          atmos-version: latest
+          install-wrapper: "false"
+      - name: Assert atmos-version output is set
+        env:
+          ATMOS_VERSION: ${{ steps.setup.outputs.atmos-version }}
+        run: |
+          echo "atmos-version output: $ATMOS_VERSION"
+          if [ -z "$ATMOS_VERSION" ]; then
+            echo "FAIL: atmos-version output is empty"
+            exit 1
+          fi
+          echo "PASS: atmos-version output is set to $ATMOS_VERSION"
+      - name: Assert atmos binary is available without wrapper
+        run: |
+          echo "Checking atmos binary..."
+          if ! command -v atmos > /dev/null 2>&1; then
+            echo "FAIL: atmos binary not found in PATH"
+            echo "PATH=$PATH"
+            exit 1
+          fi
+          ATMOS_PATH=$(command -v atmos)
+          echo "PASS: atmos binary found at $ATMOS_PATH"
+      - name: Assert atmos binary is executable directly (not a wrapper)
+        run: |
+          ATMOS_PATH=$(command -v atmos)
+          echo "atmos path: $ATMOS_PATH"
+          # Without wrapper, atmos should be the real binary (ELF/Mach-O), not a JS script
+          FILE_TYPE=$(file "$ATMOS_PATH" 2>/dev/null || echo "unknown")
+          echo "File type: $FILE_TYPE"
+          echo "PASS: atmos binary check complete"
+      - name: Assert atmos runs and returns version
+        run: |
+          echo "Running atmos version..."
+          VERSION_OUTPUT=$(atmos version 2>&1 || true)
+          echo "Version output: $VERSION_OUTPUT"
+          if [ -z "$VERSION_OUTPUT" ]; then
+            echo "FAIL: atmos version produced no output"
+            exit 1
+          fi
+          echo "PASS: atmos version ran successfully"

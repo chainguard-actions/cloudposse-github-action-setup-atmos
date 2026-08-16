@@ -1,0 +1,77 @@
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: package.json
+          cache: yarn
+
+      - name: Install Dependencies
+        run: yarn --frozen-lockfile --prefer-offline
+
+      - name: Linting
+        run: yarn lint
+
+      - name: Format Source Code
+        run: yarn format
+
+      - name: Unit Tests
+        run: yarn test
+
+      - name: Build
+        run: |
+          yarn clean
+          yarn build
+          yarn build:wrapper
+
+      - name: Integration Test
+        uses: ./
+        with:
+          atmos-version: latest
+          install-wrapper: true
+
+      - name: permissions
+        run: |
+          chmod 755 /home/runner/work/github-action-setup-atmos/atmos/atmos
+          chmod 755 /home/runner/work/github-action-setup-atmos/atmos/atmos-bin
+          cat -v /home/runner/work/github-action-setup-atmos/atmos/atmos
+
+      - name: atmos
+        id: atmos
+        run: atmos version
+
+      - name: Verify outputs are available
+        env:
+          ATMOS_STDOUT: ${{ steps.atmos.outputs.stdout }}
+          ATMOS_STDERR: ${{ steps.atmos.outputs.stderr }}
+          ATMOS_EXITCODE: ${{ steps.atmos.outputs.exitcode }}
+        run: |
+          echo "stdout: $ATMOS_STDOUT"
+          echo "stderr: $ATMOS_STDERR"
+          echo "exitcode: $ATMOS_EXITCODE"
+
+      - name: Commit and Push Changes
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
+        with:
+          committer_name: GitHub Action
+          # https://github.blog/changelog/2021-02-08-github-actions-skip-pull-request-and-push-workflows-with-skip-ci/
+          message: "chore: [skip-ci] format code and generate build artifacts"
+  major-release-tagger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cloudposse/github-action-major-release-tagger@ad2b41fc978968182b88d938c6f51e662eca7700 # v1
+        with:
+          dry-run: 'true'
