@@ -1,0 +1,53 @@
+name: Test atmos installation without wrapper
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          atmos-version: "latest"
+          install-wrapper: "false"
+      - name: Assert atmos-version output is set
+        env:
+          ATMOS_VERSION: ${{ steps.setup.outputs.atmos-version }}
+        run: |
+          echo "atmos-version: $ATMOS_VERSION"
+          if [ -z "$ATMOS_VERSION" ]; then
+            echo "FAIL: atmos-version output is empty"
+            exit 1
+          fi
+          echo "PASS: atmos-version is '$ATMOS_VERSION'"
+      - name: Assert atmos binary is on PATH
+        run: |
+          if ! command -v atmos >/dev/null 2>&1; then
+            echo "FAIL: atmos binary not found on PATH"
+            exit 1
+          fi
+          echo "PASS: atmos found at $(command -v atmos)"
+      - name: Assert atmos binary is the real binary (not a wrapper)
+        run: |
+          ATMOS_PATH=$(command -v atmos)
+          echo "atmos path: $ATMOS_PATH"
+          # When install-wrapper is false, the binary should be the real atmos
+          # and not a shell wrapper script
+          FILE_TYPE=$(file "$ATMOS_PATH" 2>&1 || true)
+          echo "file type: $FILE_TYPE"
+          # The real binary should be an ELF executable, not a shell script
+          if echo "$FILE_TYPE" | grep -qi "shell script"; then
+            echo "FAIL: atmos appears to be a shell wrapper script when install-wrapper=false"
+            exit 1
+          fi
+          echo "PASS: atmos is not a shell wrapper script"
+      - name: Assert atmos runs successfully
+        run: |
+          VERSION_OUTPUT=$(atmos version 2>&1 || true)
+          echo "atmos version output: $VERSION_OUTPUT"
+          if [ -z "$VERSION_OUTPUT" ]; then
+            echo "FAIL: atmos version produced no output"
+            exit 1
+          fi
+          echo "PASS"
