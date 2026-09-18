@@ -1,0 +1,47 @@
+name: Test specific atmos version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          atmos-version: "1.150.0"
+          install-wrapper: "true"
+          checksum-validation: warn
+      - name: Assert atmos-version output matches requested version
+        env:
+          ATMOS_VERSION: ${{ steps.action.outputs.atmos-version }}
+        run: |
+          echo "atmos-version: $ATMOS_VERSION"
+          if [ -z "$ATMOS_VERSION" ]; then
+            echo "FAIL: atmos-version output is empty"
+            exit 1
+          fi
+          if echo "$ATMOS_VERSION" | grep -qv "1.150.0"; then
+            echo "INFO: version may include prefix, checking for '1.150.0' substring"
+          fi
+          if ! echo "$ATMOS_VERSION" | grep -q "1.150.0"; then
+            echo "FAIL: expected version to contain '1.150.0', got '$ATMOS_VERSION'"
+            exit 1
+          fi
+          echo "PASS: atmos-version '$ATMOS_VERSION' contains '1.150.0'"
+      - name: Assert atmos binary is on PATH
+        run: |
+          if ! command -v atmos >/dev/null 2>&1; then
+            echo "FAIL: atmos binary not found on PATH"
+            exit 1
+          fi
+          echo "PASS: atmos found at $(command -v atmos)"
+      - name: Assert atmos reports correct version
+        run: |
+          INSTALLED=$(atmos version 2>&1 || true)
+          echo "atmos version output: $INSTALLED"
+          if ! echo "$INSTALLED" | grep -q "1.150.0"; then
+            echo "FAIL: expected atmos to report version 1.150.0, got: $INSTALLED"
+            exit 1
+          fi
+          echo "PASS: atmos reports version 1.150.0"
