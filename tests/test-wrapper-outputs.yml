@@ -1,0 +1,36 @@
+name: Test wrapper exposes stdout/exitcode outputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          atmos-version: 1.100.0
+          install-wrapper: "true"
+      - id: run-atmos
+        name: Run atmos through the wrapper
+        run: |
+          cd "$RUNNER_TEMP"
+          atmos version
+      - name: Assert wrapper outputs
+        env:
+          EXITCODE: ${{ steps.run-atmos.outputs.exitcode }}
+          STDOUT: ${{ steps.run-atmos.outputs.stdout }}
+          STDERR: ${{ steps.run-atmos.outputs.stderr }}
+        run: |
+          echo "exitcode: $EXITCODE"
+          echo "stdout: $STDOUT"
+          echo "stderr: $STDERR"
+          if [ "$EXITCODE" != "0" ]; then
+            echo "FAIL: expected exitcode 0"
+            exit 1
+          fi
+          if ! printf '%s\n%s' "$STDOUT" "$STDERR" | grep -qF "1.100.0"; then
+            echo "FAIL: expected version 1.100.0 in captured output"
+            exit 1
+          fi
+          echo "PASS"

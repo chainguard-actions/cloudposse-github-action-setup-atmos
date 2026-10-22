@@ -1,0 +1,24 @@
+name: Test version range spec
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          atmos-version: "~1.100.0"
+          install-wrapper: "false"
+      - name: Assert resolved version satisfies range
+        env:
+          ACTUAL: ${{ steps.action.outputs.atmos-version }}
+        run: |
+          echo "actual: $ACTUAL"
+          if ! echo "$ACTUAL" | grep -qE '^v1\.100\.[0-9]+$'; then
+            echo "FAIL: expected v1.100.x"
+            exit 1
+          fi
+          command -v atmos || { echo "FAIL: atmos not on PATH"; exit 1; }
+          echo "PASS"

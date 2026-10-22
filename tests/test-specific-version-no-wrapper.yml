@@ -1,0 +1,47 @@
+name: Test specific version without wrapper
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          atmos-version: 1.100.0
+          install-wrapper: "false"
+      - name: Assert atmos-version output
+        env:
+          ACTUAL: ${{ steps.action.outputs.atmos-version }}
+        run: |
+          echo "actual: $ACTUAL"
+          if [ "$ACTUAL" != "v1.100.0" ]; then
+            echo "FAIL: expected 'v1.100.0'"
+            exit 1
+          fi
+          echo "PASS"
+      - name: Assert native atmos binary on PATH with no wrapper
+        run: |
+          cd "$RUNNER_TEMP"
+          ATMOS="$(command -v atmos)"
+          echo "atmos at: $ATMOS"
+          if [ -z "$ATMOS" ]; then
+            echo "FAIL: atmos not on PATH"
+            exit 1
+          fi
+          if [ -e "$(dirname "$ATMOS")/atmos-bin" ]; then
+            echo "FAIL: atmos-bin should not exist without wrapper"
+            exit 1
+          fi
+          if head -c 2 "$ATMOS" | grep -q '#!'; then
+            echo "FAIL: atmos should be the native binary, not a script"
+            exit 1
+          fi
+          OUT="$(atmos version 2>&1 || true)"
+          echo "$OUT"
+          if ! echo "$OUT" | grep -qF "1.100.0"; then
+            echo "FAIL: expected 1.100.0 in atmos version output"
+            exit 1
+          fi
+          echo "PASS"
