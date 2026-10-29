@@ -6,14 +6,14 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 ## Versions
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v2 | [`v2`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v2) | [`822766b`](https://github.com/cloudposse/github-action-setup-atmos/commit/822766b3aaa9a3b4aa2628baaccb58dd576ad0ff) |
-| v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.0.0) | [`49625d9`](https://github.com/cloudposse/github-action-setup-atmos/commit/49625d9fcea135fe450ff3baa36283ac67b21cb8) |
-| v3.1.0 | [`v3.1.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.1.0) | [`82ed6d9`](https://github.com/cloudposse/github-action-setup-atmos/commit/82ed6d959532148e602fbbbe28b95c4628081561) |
-| v3.2.0 | [`v3.2.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.2.0) | [`89c34b2`](https://github.com/cloudposse/github-action-setup-atmos/commit/89c34b209108da66a27c8d6565d8d4b21dbdaa73) |
-| v3.6.0 | [`v3.6.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.6.0) | [`9e8d1e2`](https://github.com/cloudposse/github-action-setup-atmos/commit/9e8d1e2db56fe851a85871d5993d63e182b66536) |
-| v3.7.0 | [`v3.7.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.7.0) | [`ad511fa`](https://github.com/cloudposse/github-action-setup-atmos/commit/ad511faf93143d80f9f73ebdbc00dbdcea6d6bb0) |
+| Version | Tag | Upstream commit | Hardening report |
+|---------|-----|-----------------|------------------|
+| v2 | [`v2`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v2) | [`822766b`](https://github.com/cloudposse/github-action-setup-atmos/commit/822766b3aaa9a3b4aa2628baaccb58dd576ad0ff) | [`HARDENING.md`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/blob/v2/HARDENING.md) |
+| v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.0.0) | [`49625d9`](https://github.com/cloudposse/github-action-setup-atmos/commit/49625d9fcea135fe450ff3baa36283ac67b21cb8) | [`HARDENING.md`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/blob/v3.0.0/HARDENING.md) |
+| v3.1.0 | [`v3.1.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.1.0) | [`82ed6d9`](https://github.com/cloudposse/github-action-setup-atmos/commit/82ed6d959532148e602fbbbe28b95c4628081561) | [`HARDENING.md`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/blob/v3.1.0/HARDENING.md) |
+| v3.2.0 | [`v3.2.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.2.0) | [`89c34b2`](https://github.com/cloudposse/github-action-setup-atmos/commit/89c34b209108da66a27c8d6565d8d4b21dbdaa73) | [`HARDENING.md`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/blob/v3.2.0/HARDENING.md) |
+| v3.6.0 | [`v3.6.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.6.0) | [`9e8d1e2`](https://github.com/cloudposse/github-action-setup-atmos/commit/9e8d1e2db56fe851a85871d5993d63e182b66536) | [`HARDENING.md`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/blob/v3.6.0/HARDENING.md) |
+| v3.7.0 | [`v3.7.0`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/tree/v3.7.0) | [`ad511fa`](https://github.com/cloudposse/github-action-setup-atmos/commit/ad511faf93143d80f9f73ebdbc00dbdcea6d6bb0) | [`HARDENING.md`](https://github.com/chainguard-actions/cloudposse-github-action-setup-atmos/blob/v3.7.0/HARDENING.md) |
 
 ## Privacy
 
